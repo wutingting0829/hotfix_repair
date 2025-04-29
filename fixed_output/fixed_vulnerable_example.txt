@@ -1,0 +1,11 @@
+#include <stdio.h>
+#include <string.h>
+
+void vulnerable_function(char *input) {
+    char buffer[10];
+    // Use strncpy to prevent buffer overflow by limiting the number of characters copied
+    strncpy(buffer, input, sizeof(buffer) - 1);
+    // Ensure the buffer is null-terminated
+    buffer[sizeof(buffer) - 1] = '\0';
+    printf("Buffer: %s\n", buffer);
+}
