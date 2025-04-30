@@ -2,14 +2,21 @@
 
 ## Set Enviroment
 set the virtual machine: 
+```
 python3 -m venv myenv
 source myenv/bin/activate
 pip install -r requirement.txt
-
+```
 ## Test Results
-python3 main.py --input vulnerable_example.txt
+```
+python main.py --input vulnerable_example.txt
+python main.py --input vulnerable_example.txt 
+python main.py --input vulnerable_example.txt --function vulnerable_function
 python main.py --input vulnerable_example.txt --function vulnerable_function --output fixed_code.txt
+python main.py --input ngx_http_parse.c --function ngx_http_parse_chunked
 python main.py --input ngx_http_parse.c --function ngx_http_parse_chunked --output ngx_http_parse_fixed.txt
+
+```
 
 
 ## Important
