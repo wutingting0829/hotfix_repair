@@ -20,4 +20,5 @@ python main.py --input ngx_http_parse.c --function ngx_http_parse_chunked --outp
 
 
 ## Important
-I set open_api_key to .env, but I removed it for security reasons, so remember to set your own key!
+* I set open_api_key to .env, but I removed it for security reasons, so remember to set your own key!
+* `Main code in main.py`
