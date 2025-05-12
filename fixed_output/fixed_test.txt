@@ -1,0 +1,7 @@
+#include <stdio.h>
+
+void vulnerable_function() {
+    // Fixed syntax error by adding a missing semicolon after the variable declaration
+    int x = 10;
+    printf("x = %d\n", x);
+}
