@@ -1,0 +1,7 @@
+// fixed_input/test.c
+#include <stdio.h>
+
+void vulnerable_function() {
+    int x = 10
+    printf("x = %d\n", x);
+}
