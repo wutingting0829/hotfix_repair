@@ -6,3 +6,5 @@ vunlun_func: ngx_http_parse_chunked()
 https://github.com/danghvu/nginx-1.4.0/tree/master/src/http
 
 
+https://github.com/nginx/nginx/compare/release-1.4.0...release-1.4.1
+

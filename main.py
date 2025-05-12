@@ -61,16 +61,6 @@ def read_input_code(file_path):
         raise RuntimeError(f"Error reading file: {e}")
         
 
-# def construct_prompt(code_snippet, function_name=None):
-#     prompt = "You are a security expert skilled in analyzing source code for vulnerabilities. Your task is to follow a four-step process to identify whether a vulnerability exists in the provided code:"
-#     if function_name:
-#         prompt += f"\nPlease pay special attention to fixing issues in the function '{function_name}'."
-#     prompt += "\n\n### Original Code:\n"
-#     prompt += "```c\n" + code_snippet + "\n```\n"
-#     prompt += "\nPlease provide the corrected, complete, and compilable C code, and reply in a markdown code block format."
-#     return prompt
-
-
 def construct_prompt(code_snippet, function_name=None):
     prompt = (
         "You are a security expert skilled in analyzing source code for vulnerabilities.\n"
@@ -93,6 +83,9 @@ def construct_prompt(code_snippet, function_name=None):
         "- Use English `//` or `#` comments to explain the applied security fixes.\n"
         "- Do **not** change the original function name.\n"
         "- Do **not** provide explanations outside the code block.\n"
+        "- Search for github commits, patched versions, CVE cases, etc.\n"
+        "For example https://github.com/nginx/nginx/compare/release-1.4.0...release-1.4.1: if (ctx->size < 0 || ctx->length < 0) {goto invalid;} return rc;"
+ 
     )
     return prompt
 
@@ -105,6 +98,7 @@ def call_gpt_api(prompt, model="gpt-4", temperature=0.2):
         ],
         temperature=temperature
     )
+    
     return response
 
 def extract_code_from_response(response):
@@ -124,6 +118,7 @@ def write_output_code(output_file, code):
 def main():
     args = parse_args()
     openai.api_key = get_api_key()
+    print(f"API Key: {openai.api_key}")
 
     inputs = args.input
     functions = args.function_name if args.function_name else [None] * len(inputs)
