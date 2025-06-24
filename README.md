@@ -58,3 +58,22 @@ python3 repaire_main.py \
   --error_message "test.txt:4:5: error: expected ‘;’ before ‘printf’"
 
 ```
+## Project Structure
+```
+├── fixed_input/                     # 放置原始的漏洞程式碼
+│   ├── ngx_http_parse.c
+│   └── vulnerable_example.txt
+│
+├── fixed_output/                    # 存放 GPT 修補後的結果程式碼
+│   ├── fixed_ngx_http_parse.txt
+│   └── fixed_vulnerable_example.txt
+│
+├── assistant.py                     # 呼叫 GPT 進行修補的輔助函式
+├── main.py                          # 主程式，執行漏洞修補流程
+├── main2.py                         # 備用測試主程式（可忽略或後續合併）
+├── repaire_main.py                 # 主程式加入錯誤回饋修補機制的版本（支援第二階段error massage 修補）
+│
+├── requirement.txt                 # 專案所需 Python 套件
+├── .env                            # 儲存 OpenAI API 金鑰等環境變數
+├── README.md                       # 專案說明文件（本檔）
+```
