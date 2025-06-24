@@ -2,6 +2,7 @@
 #include <ngx_core.h>
 #include <ngx_http.h>
 
+// Function to parse chunked HTTP transfer encoding
 ngx_int_t
 ngx_http_parse_chunked(ngx_http_request_t *r, ngx_buf_t *b,
     ngx_http_chunked_t *ctx)
@@ -60,6 +61,10 @@ ngx_http_parse_chunked(ngx_http_request_t *r, ngx_buf_t *b,
 
         case sw_chunk_size:
             if (ch >= '0' && ch <= '9') {
+                // Check for overflow
+                if (ctx->size > (NGX_MAX_SIZE_T_VALUE - (ch - '0')) / 16) {
+                    goto invalid;
+                }
                 ctx->size = ctx->size * 16 + (ch - '0');
                 break;
             }
@@ -67,6 +72,10 @@ ngx_http_parse_chunked(ngx_http_request_t *r, ngx_buf_t *b,
             c = (u_char) (ch | 0x20);
 
             if (c >= 'a' && c <= 'f') {
+                // Check for overflow
+                if (ctx->size > (NGX_MAX_SIZE_T_VALUE - (c - 'a' + 10)) / 16) {
+                    goto invalid;
+                }
                 ctx->size = ctx->size * 16 + (c - 'a' + 10);
                 break;
             }
@@ -207,11 +216,6 @@ data:
 
     ctx->state = state;
     b->pos = pos;
-
-    // Check for negative size or length to prevent integer overflow
-    if (ctx->size < 0 || ctx->length < 0) {
-        goto invalid;
-    }
 
     switch (state) {
 

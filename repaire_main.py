@@ -8,6 +8,7 @@ import time
 import logging  # type: ignore
 from datetime import datetime  # type: ignore       
 from dotenv import load_dotenv  # type: ignore
+import time
 
 load_dotenv('.env', override=True)
 
@@ -117,6 +118,7 @@ def main():
         output_filename = f"fixed_{os.path.splitext(input_file)[0]}.txt"
 
         try:
+            start_time = time.time()
             code_snippet = read_input_code(input_file)
             prompt = construct_prompt(code_snippet, function_name)
             print(f"\n=== [Prompt for {input_file}] ===")
@@ -139,6 +141,9 @@ def main():
                 write_output_code(output_path, fixed_code2)
                 print(f"[✓] 已覆蓋 {output_filename}，並生成修正後版本。")
             
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"[⏱] 編譯時間：{elapsed_time:.2f} 秒")
                 
         except Exception as e:
             print(f"[✗] 錯誤發生於 {input_file}：{e}")
