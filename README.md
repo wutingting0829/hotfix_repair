@@ -59,6 +59,7 @@ python3 repaire_main.py \
 
 ```
 ## Project Structure
+```
 ├── fixed_input/                     # 放置原始的漏洞程式碼
 │   ├── ngx_http_parse.c
 │   └── vulnerable_example.txt
@@ -75,3 +76,4 @@ python3 repaire_main.py \
 ├── requirement.txt                 # 專案所需 Python 套件
 ├── .env                            # 儲存 OpenAI API 金鑰等環境變數
 ├── README.md                       # 專案說明文件（本檔）
+```
