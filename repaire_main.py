@@ -79,7 +79,7 @@ def construct_prompt(code_snippet, function_name=None):
 
 
 def call_gpt_api(prompt, model="gpt-4", temperature=0.2):
-    response = openai.ChatCompletion.create(
+    response = openai.chat.completions.create(
         model=model,
         messages=[
             {"role": "user", "content": prompt}
