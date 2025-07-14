@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 import argparse
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=get_api_key())
 import re
 import time
 import logging  # type: ignore
@@ -59,7 +61,7 @@ def read_input_code(file_path):
         raise FileNotFoundError(f"File not found: {readFile_path}")
     except Exception as e:
         raise RuntimeError(f"Error reading file: {e}")
-        
+
 
 # def construct_prompt(code_snippet, function_name=None):
 #     prompt = "You are a security expert skilled in analyzing source code for vulnerabilities. Your task is to follow a four-step process to identify whether a vulnerability exists in the provided code:"
@@ -98,17 +100,15 @@ def construct_prompt(code_snippet, function_name=None):
 
 
 def call_gpt_api(prompt, model="gpt-4", temperature=0.2):
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        temperature=temperature
-    )
+    response = client.chat.completions.create(model=model,
+    messages=[
+        {"role": "user", "content": prompt}
+    ],
+    temperature=temperature)
     return response
 
 def extract_code_from_response(response):
-    message = response.choices[0].message["content"]
+    message = response.choices[0].message.content
     code_blocks = re.findall(r"```c\s*(.*?)\s*```", message, re.DOTALL)
     if code_blocks:
         return code_blocks[0]
@@ -124,9 +124,8 @@ def write_output_code(output_file, code):
 
 def main():
     args = parse_args()
-    openai.api_key = get_api_key()
 
-    
+
 
     code_snippet = read_input_code(args.input)
     prompt = construct_prompt(code_snippet, args.function_name)
@@ -139,7 +138,7 @@ def main():
     print(prompt)
     print("=======================")
 
-    
+
     try:
         response = call_gpt_api(prompt, model=args.model, temperature=args.temperature)
     except Exception as e:
@@ -147,10 +146,10 @@ def main():
         return
 
     fixed_code = extract_code_from_response(response)
-    
+
     if not os.path.exists(OUTPUT_FOLDER):
         os.makedirs(OUTPUT_FOLDER)
-    
+
     output_file_path = os.path.join(OUTPUT_FOLDER, args.output)
     write_output_code(output_file_path, fixed_code)
     print(f"修補後的程式碼已儲存到 {output_file_path}")
