@@ -77,3 +77,4 @@ python3 repaire_main.py \
 ├── .env                            # 儲存 OpenAI API 金鑰等環境變數
 ├── README.md                       # 專案說明文件（本檔）
 ```
+## Add Model Context Protocol
