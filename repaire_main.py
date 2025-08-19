@@ -112,7 +112,7 @@ def main():
 
     for idx, input_file in enumerate(inputs):
         function_name = functions[idx] if idx < len(functions) else None
-        output_filename = f"fixed_{os.path.splitext(input_file)[0]}.txt"
+        output_filename = f"fixed2_{os.path.splitext(input_file)[0]}.txt"
 
         try:
             start_time = time.time()
