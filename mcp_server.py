@@ -8,6 +8,7 @@ from repair_core import (
     INPUT_FOLDER, OUTPUT_FOLDER,
     fix_code_with_llm
 )
+import traceback
 
 
 logging.basicConfig(level=logging.INFO)
@@ -22,24 +23,29 @@ def patch_code(code: str, function_name: str | None=None, model: str = "gpt-4o",
     """
     以結構化輸入修補程式碼；回傳修補後程式碼字串。
     """
-    fixed = fix_code_with_llm(code_snippet=code, function_name=function_name, model=model, temperature=temperature)
-    return {"status": "ok", "patched_code": fixed}
+    try:
+        fixed = fix_code_with_llm(code_snippet=code, function_name=function_name, model=model, temperature=temperature)
+        return {"status": "ok", "patched_code": fixed}
+    except Exception as e:
+        return {"status": "error", "message": f"{type(e).__name__}: {e}", "traceback": traceback.format_exc()}
 
 @mcp.tool()
-def patch_code_with_error(code: str, error_message: str, function_name: str | None=None, model: str = "gpt-4o", temperature: float = 0.2) -> dict:
+def patch_code_with_error(code: str, error_message: str | None=None, function_name: str | None=None, model: str = "gpt-4o", temperature: float = 0.2) -> dict:
     """
     帶入外部編譯錯誤（或測試失敗 log）進行二次修補。
     """
-
-    fixed = fix_code_with_llm(
+    try:
+        fixed = fix_code_with_llm(
         code_snippet=code,
         function_name=function_name,
         model=model,
         temperature=temperature,
-        error_message=error_message
-    )
-    return {"status": "ok", "patched_code": fixed}
- 
+        error_message=error_message)
+        return {"status": "ok", "patched_code": fixed}
+    except Exception as e:
+        return {"status": "error", "message": f"{type(e).__name__}: {e}", "traceback": traceback.format_exc()}
+    
+    
 # Add a dynamic greeting resource
 ROOT = Path(".").resolve()
 SAFE_DIRS = [ROOT, INPUT_FOLDER, OUTPUT_FOLDER]
@@ -49,7 +55,7 @@ def list_workspace() -> str:
     files = []
     for d in SAFE_DIRS:
         if d.exists():
-            for p in d.rglob("*.py"):
+            for p in d.rglob("*"):
                 if p.is_file():
                     files.append(str(p.relative_to(ROOT)))
     return "\n".join(files)

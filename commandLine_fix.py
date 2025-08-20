@@ -32,7 +32,8 @@ def main():
             t0 = time.time()
             code_snippet = read_input_code(input_file)
             fixed_code = fix_code_with_llm(code_snippet=code_snippet, function_name=fn, model=args.model, temperature=args.temperature,
-                                           error_message=(args.errror_message if args.enable_error_check and args.error_message else None))
+                                           error_message=(args.error_message if args.enable_error_check and args.error_message else None)
+            )
             write_output_code(output_path, fixed_code)
             print(f"[✓] 修補後的程式碼已儲存到 {output_path}  （耗時 {time.time()-t0:.2f}s）")
             

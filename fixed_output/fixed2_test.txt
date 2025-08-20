@@ -2,9 +2,7 @@
 #include <stdio.h>
 
 void vulnerable_function() {
-    // Fixed syntax error by adding a semicolon at the end of the line
+    // Fixed the missing semicolon after the variable declaration
     int x = 10;
-    // No security vulnerabilities were found in this function.
-    // The function simply initializes an integer and prints it.
     printf("x = %d\n", x);
 }

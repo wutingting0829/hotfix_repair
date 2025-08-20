@@ -1,6 +1,7 @@
 # repaire_core.py
 # -- coding: utf-8 -*-
 
+from ast import arg
 import os, re, time 
 from dotenv import load_dotenv
 import time
@@ -96,7 +97,17 @@ def fix_code_with_llm(
     fixed_code = extract_code_from_response(resp)
 
     if error_message:
-        fix_prompt = prompt + "\n\n/* 外部編譯錯誤回饋 */\n" + args.error_message + "\n請依此修正程式碼 */" 
+        fix_prompt = prompt + "\n\n/* 外部編譯錯誤回饋 */\n" + error_message + "\n請依此修正程式碼 */" 
         resp2 = call_gpt_api(fix_prompt, model= model, temperature=temperature)
         fixed_code = extract_code_from_response(resp2)
     return fixed_code
+
+    # if error_message:
+    #    fix_prompt = (
+    #         prompt
+    #         + "\n\n/* External compile/test error feedback */\n"
+    #         + error_message
+    #         + "\n/* Please fix accordingly. */"
+    #     )
+    #     resp2 = call_gpt_api(fix_prompt, model=model, temperature=temperature)
+    #     fixed = extract_code_from_response(resp2)
