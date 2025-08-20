@@ -1,6 +1,7 @@
 # mcp_server.py
 # -*- coding: utf-8 -*-
 
+import logging
 from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 from repair_core import (
@@ -8,8 +9,12 @@ from repair_core import (
     fix_code_with_llm
 )
 
+
+logging.basicConfig(level=logging.INFO)
+logging.info("Initializing MCP server...")
 #Create an MCP server
 mcp = FastMCP("Hotfix_LLM")
+logging.info("MCP server initialized.")
 
 # Add an addition tool
 @mcp.tool()
@@ -44,7 +49,7 @@ def list_workspace() -> str:
     files = []
     for d in SAFE_DIRS:
         if d.exists():
-            for p in d.rglob("*"):
+            for p in d.rglob("*.py"):
                 if p.is_file():
                     files.append(str(p.relative_to(ROOT)))
     return "\n".join(files)
@@ -68,4 +73,5 @@ def secure_fix_style() -> str:
     }
 
 if __name__ == "__main__":
+    print("MCP server running on stdio; waiting for a client (Inspector/IDE) to connect...")
     mcp.run()
