@@ -34,13 +34,12 @@ After installing mcp[cli], an mcp command will be available, providing developme
 ```
 # 方式 A：一行開 Inspector（會自動幫你啟動 server 並連線）
 mcp dev mcp_server.py
-
 ```
 ![If successful, you will see the following screen：](images/demo.png)
 
 ## Test Result
 1. Tools: `patch_code`
-![Demo](images/demo2.mov)
+https://youtu.be/-gpqR1RE688
 
 2. Tools: `patch_code_with_error
-![Demo](images/demo3.mov)
+https://youtu.be/Md3Vb3n3qT0
