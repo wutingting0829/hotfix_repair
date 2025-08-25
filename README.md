@@ -1,4 +1,20 @@
-# hotfix_repair
+# hotfix_repair(new-branch-MCP)
+## Project Structure
+```
+new-branch-MCP/
+├── fixed_input/                # 存放需要修補的原始程式碼
+│   ├── vulnerable_example.txt  # 範例：包含漏洞的程式碼
+│   └── test.txt                # 測試用的輸入檔案
+├── fixed_output/               # 存放修補後的程式碼
+│   └── fixed_test.txt          # 修補後的程式碼輸出
+├── repaire_main.py             # 主程式，用於修補程式碼漏洞
+├── mcp_server.py               # MCP 伺服器主程式
+├── repair_core.py              # 核心修補邏輯
+├── commandLine_fix.py          # 命令列工具，用於修補程式碼
+├── .env                        # 環境變數檔案，包含 API 金鑰
+├── requirements.txt            # Python 套件需求檔案
+└── README.md                   # 使用說明文件
+```
 ## Set Enviroment
 ```
 set the virtual machine: 
@@ -7,74 +23,24 @@ source myenv/bin/activate
 pip install -r requirement.txt
 ```
 
-## Test Result
-```
-python3 repaire_main.py --input vulnerable_example.txt
-python repaire_main.py --input vulnerable_example.txt --function vulnerable_function --output fixed_code.txt
-python repaire_main.py --input ngx_http_parse.c --function ngx_http_parse_chunked --output ngx_http_parse_fixed.txt
-```
-
-## Update
-### Add new function: Error Feedback Controller, optional (in the branch)
-* Function: When the user receives an error message during the external compilation phase, the error content is fed back to LLM to generate a second revision.
-* Implementation: Use the --enable_error_check flag and the --error_message parameter to determine whether to start the second stage of repair. If yes, concatenate the initial prompt and the error message and call call_gpt_api() again, overwriting the original repair file.
-
-```
- def parse_args():
-     parser = argparse.ArgumentParser(description="自動化修補程式碼漏洞 (使用 GPT API)")
-     # ... 其它參數 ...
--    parser.add_argument(
--        "--enable_error_check", type=bool,
--        help="啟用錯誤回饋機制（只有有錯誤訊息時才回饋 GPT）"
--    )
-+    parser.add_argument(
-+        "--enable_error_check",
-+        action="store_true",
-+        help="啟用錯誤回饋機制（只有帶 --error_message 時才啟動二次修正）"
-+    )
-     parser.add_argument(
-         "--error_message", type=str, default="",
-         help="外部編譯後得到的錯誤訊息，只有在 --enable_error_check 時使用"
-     )
-
-```
-
 ### How to Test
-* Execute in the project root directory: With switch, without error message → Only enable flag, but because there is no error_message, no secondary correction will be performed
+#### Way1: Using command line tools
 ```
-python3 repaire_main.py \
-  --input test.txt \
-  --function_name vulnerable_function \
-  --enable_error_check
+python cli_fix.py --input vuln.c --function_name vulnerable_function
+# 成功後會在 fixed_output/ 看到 fixed2_vuln.txt
 ```
-you may see this : `[✓] 初次修正程式碼已儲存到 fixed_output/fixed_test.txt`
-
-* With error message: At this time, args.enable_error_check will be True, and args.error_message is not empty, which will trigger the "second feedback to GPT and overwrite" process.   
+#### Way2: Starting the MCP server -> Testing with the Developer Inspector
+After installing mcp[cli], an mcp command will be available, providing development/testing tools. Use its Inspector to connect to your server directly:
 ```
-python3 repaire_main.py \
-  --input test.txt \
-  --function_name vulnerable_function \
-  --enable_error_check \
-  --error_message "test.txt:4:5: error: expected ‘;’ before ‘printf’"
+# 方式 A：一行開 Inspector（會自動幫你啟動 server 並連線）
+mcp dev mcp_server.py
 
 ```
-## Project Structure
-```
-├── fixed_input/                     # 放置原始的漏洞程式碼
-│   ├── ngx_http_parse.c
-│   └── vulnerable_example.txt
-│
-├── fixed_output/                    # 存放 GPT 修補後的結果程式碼
-│   ├── fixed_ngx_http_parse.txt
-│   └── fixed_vulnerable_example.txt
-│
-├── assistant.py                     # 呼叫 GPT 進行修補的輔助函式
-├── main.py                          # 主程式，執行漏洞修補流程
-├── main2.py                         # 備用測試主程式（可忽略或後續合併）
-├── repaire_main.py                 # 主程式加入錯誤回饋修補機制的版本（支援第二階段error massage 修補）
-│
-├── requirement.txt                 # 專案所需 Python 套件
-├── .env                            # 儲存 OpenAI API 金鑰等環境變數
-├── README.md                       # 專案說明文件（本檔）
-```
-## Add Model Context Protocol
+![If successful, you will see the following screen：](images/demo.png)
+
+## Test Result
+1. Tools: `patch_code`
+![Demo](images/demo2.mov)
+
+2. Tools: `patch_code_with_error
+![Demo](images/demo3.mov)
