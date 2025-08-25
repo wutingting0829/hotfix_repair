@@ -41,5 +41,5 @@ mcp dev mcp_server.py
 1. Tools: `patch_code`
 https://youtu.be/-gpqR1RE688
 
-2. Tools: `patch_code_with_error
+2. Tools: `patch_code_with_error`
 https://youtu.be/Md3Vb3n3qT0
