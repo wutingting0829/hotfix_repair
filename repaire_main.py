@@ -12,8 +12,6 @@ import time
 
 load_dotenv('.env', override=True)
 
-
-client = openai.ChatCompletion
 model = "gpt-4o"
 INPUT_FOLDER = "fixed_input"
 OUTPUT_FOLDER = "fixed_output"
@@ -31,7 +29,7 @@ def parse_args():
 
 
 def get_api_key():
-    
+
     get_key = os.getenv("OPENAI_API_KEY")
     if not get_key:
         raise ValueError("Please set your OPENAI_API_KEY in your environment variables.")
@@ -47,7 +45,7 @@ def read_input_code(file_path):
         raise FileNotFoundError(f"File not found: {readFile_path}")
     except Exception as e:
         raise RuntimeError(f"Error reading file: {e}")
-        
+
 
 
 def construct_prompt(code_snippet, function_name=None):
@@ -73,7 +71,7 @@ def construct_prompt(code_snippet, function_name=None):
         "- Do **not** change the original function name.\n"
         "- Do **not** provide explanations outside the code block.\n"
         "- Search for github commits, patched versions, CVE cases, etc.\n"
-      
+
     )
     return prompt
 
@@ -89,7 +87,7 @@ def call_gpt_api(prompt, model="gpt-4", temperature=0.2):
     return response
 
 def extract_code_from_response(response):
-    message = response.choices[0].message["content"]
+    message = response.choices[0].message.content
     code_blocks = re.findall(r"```c\s*(.*?)\s*```", message, re.DOTALL)
     if code_blocks:
         return code_blocks[0]
@@ -101,10 +99,9 @@ def write_output_code(output_file, code):
         f.write(code)
 
 
-    
+
 def main():
     args = parse_args()
-    openai.api_key = get_api_key()
 
     inputs = args.input
     functions = args.function_name if args.function_name else [None] * len(inputs)
@@ -140,11 +137,11 @@ def main():
                 fixed_code2 = extract_code_from_response(response2)
                 write_output_code(output_path, fixed_code2)
                 print(f"[✓] 已覆蓋 {output_filename}，並生成修正後版本。")
-            
+
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"[⏱] 編譯時間：{elapsed_time:.2f} 秒")
-                
+
         except Exception as e:
             print(f"[✗] 錯誤發生於 {input_file}：{e}")
 

@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 import argparse
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=get_api_key())
 import re
 import time
 import logging  # type: ignore
@@ -59,7 +61,7 @@ def read_input_code(file_path):
         raise FileNotFoundError(f"File not found: {readFile_path}")
     except Exception as e:
         raise RuntimeError(f"Error reading file: {e}")
-        
+
 
 def construct_prompt(code_snippet, function_name=None):
     prompt = (
@@ -85,24 +87,22 @@ def construct_prompt(code_snippet, function_name=None):
         "- Do **not** provide explanations outside the code block.\n"
         "- Search for github commits, patched versions, CVE cases, etc.\n"
         "For example https://github.com/nginx/nginx/compare/release-1.4.0...release-1.4.1: if (ctx->size < 0 || ctx->length < 0) {goto invalid;} return rc;"
- 
+
     )
     return prompt
 
 
 def call_gpt_api(prompt, model="gpt-4", temperature=0.2):
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        temperature=temperature
-    )
-    
+    response = client.chat.completions.create(model=model,
+    messages=[
+        {"role": "user", "content": prompt}
+    ],
+    temperature=temperature)
+
     return response
 
 def extract_code_from_response(response):
-    message = response.choices[0].message["content"]
+    message = response.choices[0].message.content
     code_blocks = re.findall(r"```c\s*(.*?)\s*```", message, re.DOTALL)
     if code_blocks:
         return code_blocks[0]
@@ -114,10 +114,9 @@ def write_output_code(output_file, code):
         f.write(code)
 
 
-    
+
 def main():
     args = parse_args()
-    openai.api_key = get_api_key()
     print(f"API Key: {openai.api_key}")
 
     inputs = args.input
